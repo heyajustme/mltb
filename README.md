@@ -3,6 +3,9 @@ substantial modifications and is designed for efficiently mirroring or leeching 
 destinations, including Google Drive, Telegram, or any rclone-supported cloud. It is built using asynchronous
 programming in Python.
 
+- **TELEGRAM CHANNEL:** https://t.me/mltb_official_channel
+- **TELEGRAM GROUP:** https://t.me/mltb_official_support
+
 # Features
 
 ## qBittorrent
@@ -33,13 +36,15 @@ programming in Python.
 - Split size (global, user, and task option)
 - Thumbnail (user and task option)
 - Leech filename prefix (user option)
-- Set upload as a document or as media (global and user option)
-- Upload all files to a specific chat (superGroup/channel/private) (global, user, and task option)
+- Set upload as a document or as media (global, user and task option)
+- Upload all files to a specific chat (superGroup/channel/private/topic) (global, user, and task option)
 - Equal split size settings (global and user option)
 - Ability to leech split file parts in a media group (global and user option)
 - Download restricted messages (document or link) by tg private/public/super links (task option)
 - Choose transfer by bot or user session in case you have a premium plan (global, user option and task option)
 - Mix upload between user and bot session with respect to file size (global, user option and task option)
+- Upload with custom layout multiple thubnmail (global, user option and task option)
+- Topics support
 
 ## Google Drive
 
@@ -102,6 +107,7 @@ programming in Python.
 
 - Extract splits with or without password
 - Zip file/folder with or without password
+- Decompress zst files
 - Using 7-zip tool to extract with or without password all supported types:
 
 > ZIP, RAR, TAR, 7z, ISO, WIM, CAB, GZIP, BZIP2, APM, ARJ, CHM, CPIO, CramFS, DEB, DMG, FAT, HFS, LZH, LZMA, LZMA2,MBR,
@@ -118,9 +124,10 @@ programming in Python.
 
 ## Rclone
 
-- Rclone transfer (download/upload/clone-server-side) without or with random service accounts (global and user option)
-- Ability to choose config, remote and path from list with buttons (global, user and task option)
-- Ability to set rclone flags for each task or globally from config (global, user and task option)
+- Transfer (download/upload/clone-server-side) without or with random service accounts (global and user option)
+- Ability to choose config, remote and path from list with or without buttons (global, user and task option)
+- Ability to set flags for each task or globally from config (global, user and task option)
+- Abitity to select specific files or folders to download/copy using buttons (task option)
 - Rclone.conf (global and user option)
 - Rclone serve for combine remote to use it as index from all remotes (global option)
 - Upload destination (global, user and task option)
@@ -142,6 +149,7 @@ programming in Python.
 - Bulk download from telegram txt file or text message contains links seperated by new line (task option)
 - Join splitted files that have splitted before by split(linux pkg) (task option)
 - Sample video Generator (task option)
+- Screenshots Generator (task option)
 - Ability to cancel upload/clone/archive/extract/split/queue (task option)
 - Cancel all buttons for choosing specific tasks status to cancel (global option)
 - Convert videos and audios to specific format with filter (task option)
@@ -159,8 +167,7 @@ programming in Python.
 > shrdsk.me (
 > sharedisk.io), akmfiles.com, wetransfer.com, pcloud.link, gofile.io (file/folders), easyupload.io, mdisk.me (with
 > ytdl),
-> tmpsend.com, qiwi.gg, berkasdrive.com, mp4upload.com, terabox.com (file/folders) (you need to add cookies txt with
-> name) [terabox.txt](https://github.com/ytdl-org/youtube-dl#how-do-i-pass-cookies-to-youtube-dl).
+> tmpsend.com, qiwi.gg, berkasdrive.com, mp4upload.com, terabox.com (videos only file/folders).
 
 # How to deploy?
 
@@ -232,12 +239,10 @@ quotes, even if it's `Int`, `Bool` or `List`.
   *NOTE**: You can't use bot with private message. Use it with superGroup.
 - `DATABASE_URL`: Your Mongo Database URL (Connection string). Follow
   this [Generate Database](https://github.com/anasty17/mirror-leech-telegram-bot/tree/master#generate-database) to
-  generate database. Data will be saved in Database: auth and sudo users, users settings including thumbnails for each
-  user, rss data and incomplete tasks. **NOTE**: You can always edit all settings that saved in database from the
-  official site -> (Browse collections). `Str`
-- `DOWNLOAD_DIR`: The path to the local folder where the downloads should be downloaded to. `Str`
-- `CMD_SUFFIX`: commands index number. This number will added at the end all commands. `Str`|`Int`
-- `AUTHORIZED_CHATS`: Fill user_id and chat_id of groups/users you want to authorize. Separate them by space. `Int`
+  generate database. Data will be saved in Database: bot settings, users settings, rss data and incomplete tasks. **NOTE**: You can always edit all settings that saved in database from the official site -> (Browse collections). `Str`
+- `DOWNLOAD_DIR`: The path to the vps local folder where the downloads should be downloaded to. `Str`
+- `CMD_SUFFIX`: Commands index number. This number will added at the end all commands. `Str`|`Int`
+- `AUTHORIZED_CHATS`: Fill user_id and chat_id of groups/users you want to authorize. To auth only specific topic(s) write it in this format `chat_id|thread_id` Ex:-100XXXXXXXXXXX|10 or Ex:-100XXXXXXXXXXX|10|12. Separate them by space. `Int`
 - `SUDO_USERS`: Fill user_id of users whom you want to give sudo permission. Separate them by space. `Int`
 - `DEFAULT_UPLOAD`: Whether `rc` to upload to `RCLONE_PATH` or `gd` to upload to `GDRIVE_ID`. Default is `gd`. Read
   More [HERE](https://github.com/anasty17/mirror-leech-telegram-bot/tree/master#upload).`Str`
@@ -260,18 +265,17 @@ quotes, even if it's `Int`, `Bool` or `List`.
 - `USE_SERVICE_ACCOUNTS`: Whether to use Service Accounts or not, with google-api-python-client. For this to work
   see [Using Service Accounts](https://github.com/anasty17/mirror-leech-telegram-bot#generate-service-accounts-what-is-service-account)
   section below. Default is `False`. `Bool`
-- `NAME_SUBSTITUTE`: Add word/letter/sentense/pattern to remove or replace with other words with sensitive case or without.**Notes**: 
+- `NAME_SUBSTITUTE`: Add word/letter/character/sentense/pattern to remove or replace with other words with sensitive case or without. **Notes**:
   1. Seed will get disbaled while using this option
-  2. Before any character you must add \, those are the characters: `\^$.|?*+()[]{}-`
-  * Example-1: `text : code : s | mirror : leech | tea :  : s | clone`
-    - text will get replaced by code with sensitive case
-    - mirror will get replaced by leech
-    - tea will get removed with sensitive case
-    - clone will get removed
-  * Example-2: `\(text\) | \[test\] : test | \\text\\ : text : s`
-    - `(text)` will get removed
-    - `[test]` will get replaced by test
-    - `\text\` will get replaced by text with sensitive case
+  2. Before any character you must add `\BACKSLASH`, those are the characters: `\^$.|?*+()[]{}-`
+  * Example: script/code/s | mirror/leech | tea/ /s | clone | cpu/ | \[mltb\]/mltb | \\text\\/text/s
+   - script will get replaced by code with sensitive case
+   - mirror will get replaced by leech
+   - tea will get replaced by space with sensitive case
+   - clone will get removed
+   - cpu will get replaced by space
+   - [mltb] will get replaced by mltb
+   - \text\ will get replaced by text with sensitive case
 
 **3. GDrive Tools**
 
@@ -316,11 +320,12 @@ quotes, even if it's `Int`, `Bool` or `List`.
 - `MIXED_LEECH`: Upload by user and bot session with respect to file size. Only in superChat. Default is `False`. `Bool`
 - `LEECH_FILENAME_PREFIX`: Add custom word to leeched file name. `Str`
 - `LEECH_DUMP_CHAT`: ID or USERNAME or PM(private message) to where files would be uploaded. `Int`|`Str`. Add `-100` before channel/superGroup id.
+- `THUMBNAIL_LAYOUT`: Thumbnail layout (widthxheight, 2x2, 3x3, 2x4, 4x4, ...) of how many photo arranged for the thumbnail.`Str`
 
 **7. qBittorrent/Aria2c/Sabnzbd**
 
 - `TORRENT_TIMEOUT`: Timeout of dead torrents downloading with qBittorrent and Aria2c in seconds. `Int`
-- `BASE_URL`: Valid BASE URL where the bot is deployed to use torrent web files selection. Format of URL should
+- `BASE_URL`: Valid BASE URL where the bot is deployed to use torrent/nzb web files selection. Format of URL should
   be `http://myip`, where `myip` is the IP/Domain(public) of your bot or if you have chosen port other than `80` so
   write it in this format `http://myip:port` (`http` and not `https`). `Str`
 - `BASE_URL_PORT`: Which is the **BASE_URL** Port. Default is `80`. `Int`
@@ -335,6 +340,7 @@ quotes, even if it's `Int`, `Bool` or `List`.
 
 - `JD_EMAIL`: jdownlaoder email sign up on [JDownloader](https://my.jdownloader.org/)
 - `JD_PASS`: jdownlaoder password
+  - **JDownloader Config**: You can use your config from local device to bot by *zipping* cfg folder (cfg.zip) and add it in repo folder but *before zip* you must change the downloads directory to `/root/Downloads`.
 
 **9. Sabnzbd**
 
@@ -344,15 +350,13 @@ quotes, even if it's `Int`, `Bool` or `List`.
 
   - [READ THIS FOR MORE INFORMATION](https://sabnzbd.org/wiki/configuration/4.2/servers)
 
-  - **NOTE**: Enable port 8070 in your vps to access sabnzbd full web interface
-  - Open port 8070 in your vps to access web interface from any device. Use it like http://ip:8070/sabnzbd/.
+  - Open port 8070 in your vps to access full web interface from any device. Use it like http://ip:8070/sabnzbd/.
 
 **10. RSS**
 
 - `RSS_DELAY`: Time in seconds for rss refresh interval. Recommended `600` second at least. Default is `600` in
   sec. `Int`
-- `RSS_CHAT`: Chat ID/USERNAME where rss links will be sent. If you want message to be sent to the channel then add
-  channel id. Add `-100` before channel id. `Int`|`Str`
+- `RSS_CHAT`: Chat `ID or USERNAME or ID|TOPIC_ID or USERNAME|TOPIC_ID` where rss links will be sent. If you want message to be sent to the channel then add channel id. Add `-100` before channel id. `Int`|`Str`
     - **RSS NOTES**: `RSS_CHAT` is required, otherwise monitor will not work. You must use `USER_STRING_SESSION` --OR--
       *CHANNEL*. If using channel then bot should be added in both channel and group(linked to channel) and `RSS_CHAT`
       is the channel id, so messages sent by the bot to channel will be forwarded to group. Otherwise
