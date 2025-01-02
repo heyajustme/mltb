@@ -9,7 +9,7 @@ from base64 import b64encode
 from secrets import token_urlsafe
 from myjd.exception import MYJDException
 
-from bot import (
+from .... import (
     task_dict,
     task_dict_lock,
     LOGGER,
@@ -116,6 +116,7 @@ async def get_jd_download_directory():
 async def add_jd_download(listener, path):
     try:
         async with jd_lock:
+            gid = token_urlsafe(12)
             if not jdownloader.is_connected:
                 raise MYJDException(jdownloader.error)
 
@@ -137,7 +138,6 @@ async def add_jd_download(listener, path):
                         package_ids=odl_list
                     )
 
-            gid = token_urlsafe(12)
             jd_downloads[gid] = {"status": "collect", "path": path}
 
             if await aiopath.exists(listener.link):
@@ -219,7 +219,7 @@ async def add_jd_download(listener, path):
 
                 if online_packages:
                     if listener.join and len(online_packages) > 1:
-                        listener.name = listener.folder_name
+                        listener.name = "Joined Packages"
                         await jdownloader.device.linkgrabber.move_to_new_package(
                             listener.name,
                             f"{path}/{listener.name}",
@@ -349,7 +349,8 @@ async def add_jd_download(listener, path):
     except (Exception, MYJDException) as e:
         await listener.on_download_error(f"{e}".strip())
         async with jd_lock:
-            del jd_downloads[gid]
+            if gid in jd_downloads:
+                del jd_downloads[gid]
     finally:
         if await aiopath.exists(listener.link):
             await remove(listener.link)
@@ -367,13 +368,13 @@ async def add_jd_download(listener, path):
     links_to_remove = []
     force_download = False
     for dlink in links:
-        if dlink["status"] == "Invalid download directory":
+        if dlink.get("status", "") == "Invalid download directory":
             force_download = True
             new_name, ext = dlink["name"].rsplit(".", 1)
             new_name = new_name[: 250 - len(f".{ext}".encode())]
             new_name = f"{new_name}.{ext}"
             await jdownloader.device.downloads.rename_link(dlink["uuid"], new_name)
-        elif dlink["status"] == "HLS stream broken?":
+        elif dlink.get("status", "") == "HLS stream broken?":
             links_to_remove.append(dlink["uuid"])
 
     if links_to_remove:

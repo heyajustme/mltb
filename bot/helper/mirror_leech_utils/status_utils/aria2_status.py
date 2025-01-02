@@ -1,6 +1,6 @@
 from time import time
 
-from bot import aria2, LOGGER
+from .... import aria2, LOGGER
 from ...ext_utils.bot_utils import sync_to_async
 from ...ext_utils.status_utils import MirrorStatus, get_readable_time
 
@@ -60,9 +60,9 @@ class Aria2Status:
         elif self._download.is_paused:
             return MirrorStatus.STATUS_PAUSED
         elif self._download.seeder and self.seeding:
-            return MirrorStatus.STATUS_SEEDING
+            return MirrorStatus.STATUS_SEED
         else:
-            return MirrorStatus.STATUS_DOWNLOADING
+            return MirrorStatus.STATUS_DOWNLOAD
 
     def seeders_num(self):
         return self._download.num_seeders
@@ -99,7 +99,7 @@ class Aria2Status:
             await sync_to_async(aria2.remove, [self._download], force=True, files=True)
         elif downloads := self._download.followed_by:
             LOGGER.info(f"Cancelling Download: {self.name()}")
-            await self.listener.on_download_error("Download cancelled by user!")
+            await self.listener.on_download_error("Cancelled by user!")
             downloads.append(self._download)
             await sync_to_async(aria2.remove, downloads, force=True, files=True)
         else:
@@ -108,6 +108,6 @@ class Aria2Status:
                 msg = "task have been removed from queue/download"
             else:
                 LOGGER.info(f"Cancelling Download: {self.name()}")
-                msg = "Download stopped by user!"
+                msg = "Stopped by user!"
             await self.listener.on_download_error(msg)
             await sync_to_async(aria2.remove, [self._download], force=True, files=True)
