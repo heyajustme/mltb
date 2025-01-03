@@ -102,4 +102,4 @@ SEARCH_PLUGINS = [
     "https://raw.githubusercontent.com/v1k45/1337x-qBittorrent-search-plugin/master/leetx.py",
     "https://raw.githubusercontent.com/nindogo/qbtSearchScripts/master/magnetdl.py",
     "https://raw.githubusercontent.com/msagca/qbittorrent_plugins/main/uniondht.py",
-    "https://raw.githubusercontent.com/khensolomon/leyts/master/yts.py",
+    "https://raw.githubusercontent.com/khensolomon/leyts/master/yts.py",]
