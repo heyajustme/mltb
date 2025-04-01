@@ -21,7 +21,7 @@ from .help_messages import (
 
 COMMAND_USAGE = {}
 
-THREAD_POOL = ThreadPoolExecutor(max_workers=3000)
+THREAD_POOL = ThreadPoolExecutor(max_workers=500)
 
 
 class SetInterval:
@@ -108,9 +108,11 @@ def arg_parser(items, arg_base):
         "-fd",
         "-fu",
         "-sync",
-        "-ml",
+        "-hl",
         "-doc",
         "-med",
+        "-ut",
+        "-bt",
     }
 
     while i < total:
@@ -124,7 +126,19 @@ def arg_parser(items, arg_base):
                 i + 1 == total
                 and part in bool_arg_set
                 or part
-                in ["-s", "-j", "-f", "-fd", "-fu", "-sync", "-ml", "-doc", "-med"]
+                in [
+                    "-s",
+                    "-j",
+                    "-f",
+                    "-fd",
+                    "-fu",
+                    "-sync",
+                    "-hl",
+                    "-doc",
+                    "-med",
+                    "-ut",
+                    "-bt",
+                ]
             ):
                 arg_base[part] = True
             else:
@@ -143,7 +157,11 @@ def arg_parser(items, arg_base):
                             break
                     sub_list.append(items[j])
                 if sub_list:
-                    arg_base[part] = " ".join(sub_list)
+                    value = " ".join(sub_list)
+                    if part == "-ff" and not value.strip().startswith("["):
+                        arg_base[part].add(value)
+                    else:
+                        arg_base[part] = value
                     i += len(sub_list)
 
         i += 1
@@ -156,12 +174,14 @@ def arg_parser(items, arg_base):
 
 def get_size_bytes(size):
     size = size.lower()
-    if size.endswith("mb"):
-        size = size.split("mb")[0]
-        size = int(float(size) * 1048576)
-    elif size.endswith("gb"):
-        size = size.split("gb")[0]
-        size = int(float(size) * 1073741824)
+    if "k" in size:
+        size = int(float(size.split("k")[0]) * 1024)
+    elif "m" in size:
+        size = int(float(size.split("m")[0]) * 1048576)
+    elif "g" in size:
+        size = int(float(size.split("g")[0]) * 1073741824)
+    elif "t" in size:
+        size = int(float(size.split("t")[0]) * 1099511627776)
     else:
         size = 0
     return size
